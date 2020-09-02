@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html>
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>IdeaMan 爬虫页面</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./crawler.css">
+    <!-- 生产环境版本，优化了尺寸和速度 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js" async></script> -->
+</head>
+
+<body>
+    <div id="app">
+        <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+        <header>
+            <h1 class="header">IdeaMan 爬虫页面</h1>
+        </header>
+
+        <main>
+            <div id="draw-border">
+                <button @click="startCrawler">Start Crawler</button>
+            </div>
+            <div>
+                <h2>{{status}}</h2>
+                <div id="timer">
+                    <h2>计时器</h2>
+                    <span id="hours">{{Hours}}</span>
+                    <span>:</span>
+                    <span id="minute">{{Minute}}</span>
+                    <span>:</span>
+                    <span id="second">{{Second}}</span>
+                </div>
+            </div>
+            <div>
+                <h2>{{content}}</h2>
+            </div>
+        </main>
+
+        <footer></footer>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                status: "未开始",
+                content: "No Content",
+                closeTimer: false,
+                Hours: 0,
+                Minute: 0,
+                Second: 0
+            },
+            mounted() {
+                // this.startCrawler()
+            },
+            methods: {
+                startCrawler() {
+                    this.clearTimer()
+                    this.startTimer()
+                    this.status = "loading......"
+                    console.log("Start Crawler... ...")
+                    let _this = this
+                    new Promise((resolve, reject) => {
+                        let url = "http://localhost:3000/api/crawler"
+                        let xhr = new XMLHttpRequest()
+                        xhr.open('get', url, true)
+                        xhr.timeout = 3000000
+                        xhr.ontimeout = function() {
+                            alert("爬虫请求超时")
+                        }
+                        xhr.send()
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    // alert(xhr.responseText)
+                                    resolve(xhr.responseText)
+                                }
+                            }
+                        }
+                    }).then(res => {
+                        _this.status = "爬虫请求已完成"
+                        _this.content = res
+                        _this.closeTimer = true
+                    })
+                },
+
+                startTimer() {
+                    let _this = this
+
+                    let timer = setInterval(function() {
+                        if (_this.closeTimer) {
+                            clearInterval(timer);
+                        }
+                        _this.Second++;
+                        if (_this.Second > 59) {
+                            _this.Second = 0;
+                            _this.Minute++;
+                            if (_this.Minute > 59) {
+                                _this.Minute = 0;
+                                _this.Hours++;
+                            }
+                        }
+                    }, 1000)
+                },
+                clearTimer() {
+                    this.Hours = 0
+                    this.Minute = 0
+                    this.Second = 0
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

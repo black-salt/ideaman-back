@@ -1,0 +1,12 @@
+{
+  "liveServer.settings.port": 5501,
+  "eslint.options": { //指定eslint配置文件位置i
+    "configFile": ".eslintrc.js" //指定项目根目录中的eslint配置文件
+  },
+  "cSpell.words": [
+    "backplatform",
+    "ideaman",
+    "koa",
+    "server"
+  ]
+}
