@@ -11,7 +11,7 @@
  Target Server Version : 80015
  File Encoding         : 65001
 
- Date: 01/09/2020 23:13:18
+ Date: 08/10/2020 10:01:39
 */
 
 SET NAMES utf8mb4;
@@ -30,7 +30,7 @@ CREATE TABLE `advice`  (
   `status` smallint(5) NOT NULL COMMENT '处理状态(0表示未处理，1表示已上报并处理中，2表示处理完毕)',
   `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for library_paper
@@ -47,12 +47,18 @@ CREATE TABLE `library_paper`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Records of library_paper
+-- ----------------------------
+INSERT INTO `library_paper` VALUES (1, 3, 1, '2020-09-02 11:13:38', '2020-09-02 11:13:38', 0);
+
+-- ----------------------------
 -- Table structure for paper
 -- ----------------------------
 DROP TABLE IF EXISTS `paper`;
 CREATE TABLE `paper`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '唯一标识论文，如果来自 arXiv 或 Acemap 则使用其 ID，若用户上传则随机',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '唯一标识论文，如果来自 arXiv 或 Acemap 则使用其 ID，若用户上传则随机',
+  `paper_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `user_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `authors` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '论文的作者们',
   `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '见 PaperTypes',
   `cited_papers` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '引用的论文',
@@ -71,7 +77,12 @@ CREATE TABLE `paper`  (
   `update_time` datetime(0) NULL DEFAULT NULL,
   `deleted` int(1) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of paper
+-- ----------------------------
+INSERT INTO `paper` VALUES (1, NULL, 'a', 'Tanmay Shankar,Nicholas Rhinehart,Katharina Muelling', '1', 'a', '[\'cs.LG\',\'cs.AI\',\'cs.CV\',\'cs.RO\',\'stat.ML\']', 'a', 'a', 'a', 'https://www.baidu.com', 'Learning Neural Parsers with Deterministic Differentiable Imitation Learning', '2020-08-24 19:21:27', '2020-08-24 19:21:27', 'a', 'Negative user preference is an important context that is not sufficiently utilized by many existing recommender systems. This context is especially useful in scenarios where the cost of negative items is high for the users. We build upon existing machine-learning model to incorporate the contextual information provided by negative user preference.', 'a', '2020-08-24 19:21:27', '2020-08-24 19:21:27', 0);
 
 -- ----------------------------
 -- Table structure for paper_type
@@ -81,9 +92,16 @@ CREATE TABLE `paper_type`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '论文类型(来自 arXiv,用户自己上传,来自 Acemap)',
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
-  `deleted` int(2) UNSIGNED ZEROFILL NULL DEFAULT NULL,
+  `deleted` int(1) UNSIGNED ZEROFILL NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of paper_type
+-- ----------------------------
+INSERT INTO `paper_type` VALUES (1, 'arxiv', '论文信息来自 arXiv', 0);
+INSERT INTO `paper_type` VALUES (2, 'user', '论文信息由用户自己上传', 0);
+INSERT INTO `paper_type` VALUES (3, 'acemap', '论文信息来自 Acemap', 0);
 
 -- ----------------------------
 -- Table structure for team
@@ -101,7 +119,7 @@ CREATE TABLE `team`  (
   `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
   `deleted` tinyint(1) NULL DEFAULT NULL COMMENT '逻辑删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for user
@@ -123,7 +141,14 @@ CREATE TABLE `user`  (
   `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
   `deleted` int(1) NULL DEFAULT NULL COMMENT '逻辑删除(0 未删除 1 已删除)',
   PRIMARY KEY (`id`, `username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of user
+-- ----------------------------
+INSERT INTO `user` VALUES (1, '白糖炒栗子', '2', '李思宽', '1431184104763', 'd9b22c6f91c0eb7e56517e8453a8a140', 'lisikuanreno@163.com', 'https://halftown.oss-cn-beijing.aliyuncs.com/user/avatar/nono.jpg', '我是Idea Man新成员啦', 0, 0, '2020-08-10 15:06:10', '2020-08-10 15:06:10', 0);
+INSERT INTO `user` VALUES (2, '什么鬼', '2', '什么鬼', '1211552845775', 'ecae16b9e5d6b5e4310cbfbb58bbe99e', 'shenmegui@163.com', 'https://halftown.oss-cn-beijing.aliyuncs.com/user/avatar/nono.jpg', '我是Idea Man新成员啦', 0, 0, '2020-08-10 15:39:19', '2020-08-10 15:39:19', 0);
+INSERT INTO `user` VALUES (3, 'librec', '2', 'librec', '430258853070', '170f829d19d8b641b76947b4453e0f43', 'librec@163.com', 'https://halftown.oss-cn-beijing.aliyuncs.com/user/avatar/nono.jpg', '我是Idea Man新成员啦', 0, 0, '2020-08-24 19:21:27', '2020-08-24 19:21:27', 0);
 
 -- ----------------------------
 -- Table structure for user_type
@@ -135,6 +160,13 @@ CREATE TABLE `user_type`  (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
   `deleted` int(1) NULL DEFAULT NULL COMMENT '逻辑删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of user_type
+-- ----------------------------
+INSERT INTO `user_type` VALUES (1, 'arxiv', '论文信息来自 arXiv', 0);
+INSERT INTO `user_type` VALUES (2, 'user', '论文信息由用户自己上传', 0);
+INSERT INTO `user_type` VALUES (3, 'acemap', '论文信息来自 Acemap', 0);
 
 SET FOREIGN_KEY_CHECKS = 1;
