@@ -4,6 +4,7 @@ import { app } from '../config'
 import { cpus } from 'os'
 import UserService from '../service/user';
 import PaperService from '../service/paper';
+import AuthorService from '../service/author';
 import { PaperInterface } from '../service/paper';
 
 export default class User {
@@ -132,53 +133,41 @@ export default class User {
   async firstPaint(ctx: Context) {
     // const id = 1
     const papers: Array<PaperInterface> = await PaperService.getPaper({ deleted: 0 })
+
     const resPapers = papers.map(item => {
       return {
-          'status_type': 'first_cold_paper',
-          'type': 'arxiv',
-          'id': item.id,
-          'user': item.userId,
-          'title': item.title,
-          'authors': item.authors.split(','),
-          'tags': item.tags.split(',').map(itemy=>itemy.replace(/[\][']/g,'')),
-          'keywords': [
-            'Imitation Learning',
-            'Reinforcement Learning',
-            'Parsing'
-          ],
-          'link': item.link,
-          'abstract': item.description,
-          'published': item.published,
-          'journal': item.journal,
-          'conference': item.conference,
-          'citedPapers': item.citedPapers,
-          'updated:': item.updated,
-          'thumbnailURL': item.thumbs,
-        }
+        'status_type': 'first_cold_paper',
+        'type': 'arxiv',
+        'id': item.id,
+        'user': item.userId,
+        'title': item.title,
+        'authors': item.authors.split(',').map(item => +item),
+        'tags': item.tags.split(',').map(itemy => itemy.replace(/[\][']/g, '')),
+        'keywords': [
+          // 'Imitation Learning',
+          // 'Reinforcement Learning',
+          // 'Parsing'
+        ],
+        'link': item.link,
+        'abstract': item.description,
+        'published': item.published,
+        'journal': item.journal,
+        'conference': item.conference,
+        'citedPapers': item.citedPapers,
+        'updated:': item.updated,
+        'thumbnailURL': item.thumbs,
+      }
     })
-    // const res:PaperInterface = papers[0]
+
+    for await (const paper of resPapers) {
+      let authorIds = paper.authors
+      let res: Array<any> = await AuthorService.getAuthorList(authorIds)
+      paper.authors = res.map((item: any) => item.author)
+    }
 
     return ctx.body = {
       code: 0,
       data: resPapers,
-      // data:
-      // [{
-      //   'status_type': 'followed_people_paper',
-      //   'type': 'arxiv',
-      //   'id': res.id,
-      //   'user': res.userId,
-      //   'title': res.title,
-      //   'authors': [res.title],
-      //   'tags': res.tags.split(',').map(item=>item.replace(/[\][']/g,'')),
-      //   'keywords': [
-      //     'Imitation Learning',
-      //     'Reinforcement Learning',
-      //     'Parsing'
-      //   ],
-      //   'link': res.link,
-      //   'abstract': res.description,
-      //   'thumbnailURL': '',
-      // }],
       message: 'success'
     };
   }

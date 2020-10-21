@@ -1,6 +1,8 @@
 import { Context } from 'koa';
 import { get, put, del, post } from '../decorator/httpMethod';
 import PaperService from '../service/paper';
+import OfflinePaperService from '../service/offline';
+import { OfflinePaperInterface } from '../service/offline';
 import { PaperInterface } from '../service/paper';
 
 export default class Paper {
@@ -8,47 +10,24 @@ export default class Paper {
   @get('/relatedPaper', true)
   async relatedPaper(ctx: Context) {
     const { paper_id } = ctx.query;
-    const papers: Array<PaperInterface> = await PaperService.getRelatedPaper({ id: paper_id });
-
-    
+    let papers: Array<OfflinePaperInterface> = await OfflinePaperService.getRelatedPaper({ paperId: +paper_id });
+    let len = papers.length
+    const offlinePapers = papers[len - 1].recs.split(',').map(item => +item)
 
     if (!papers.length) {
       return ctx.body = {
         code: 1,
-        message: '论文不存在'
+        message: '暂无您的离线推荐论文'
       };
     } else {
       return ctx.body = {
         code: 0,
-        data: papers.map(item => {
-          return {
-            'status_type': 'first_cold_paper',
-            'type': 'arxiv',
-            'id': item.id,
-            'user': item.userId,
-            'title': item.title,
-            'authors': item.authors.split(','),
-            'tags': item.tags.split(',').map(itemy => itemy.replace(/[\][']/g, '')),
-            'keywords': [
-              'Imitation Learning',
-              'Reinforcement Learning',
-              'Parsing'
-            ],
-            'link': item.link,
-            'abstract': item.description,
-            'published': item.published,
-            'journal': item.journal,
-            'conference': item.conference,
-            'citedPapers': item.citedPapers,
-            'updated:': item.updated,
-            'thumbnailURL': item.thumbs,
-          }
-        })[0],
+        data: offlinePapers,
         message: 'success'
       };
     }
   }
-  
+
 
   @get('/paperinfo', true)
   async paperInfo(ctx: Context) {
