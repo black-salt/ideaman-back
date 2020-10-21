@@ -64,11 +64,14 @@ class PaperService {
   static getPaper<T>(data: PaperInfoInterface): Promise<T> {
     if (data.id) {
       return Models.Paper.findAll({
-        where: { id: data.id, deleted: 0 }
+        where: { id: data.id, 
+          // deleted: 0 
+        }
       })
     } else {
       return Models.Paper.findAll({
-        where: { deleted: 0 }
+        limit: 10,
+        // where: { deleted: 0 }
       })
     }
   }
@@ -83,7 +86,7 @@ class PaperService {
       where: {
         id: {
           $in: data,
-          deleted: 0
+          // deleted: 0
         }
       }
     })
@@ -96,7 +99,9 @@ class PaperService {
    */
   static getCount<T>(): Promise<T> {
     return Models.Paper.count({
-      where: { deleted: 0 }
+      where: { 
+        // deleted: 0 
+      }
     })
   }
 

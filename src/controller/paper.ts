@@ -5,50 +5,91 @@ import { PaperInterface } from '../service/paper';
 
 export default class Paper {
 
+  @get('/relatedPaper', true)
+  async relatedPaper(ctx: Context) {
+    const { paper_id } = ctx.query;
+    const papers: Array<PaperInterface> = await PaperService.getRelatedPaper({ id: paper_id });
+
+    
+
+    if (!papers.length) {
+      return ctx.body = {
+        code: 1,
+        message: '论文不存在'
+      };
+    } else {
+      return ctx.body = {
+        code: 0,
+        data: papers.map(item => {
+          return {
+            'status_type': 'first_cold_paper',
+            'type': 'arxiv',
+            'id': item.id,
+            'user': item.userId,
+            'title': item.title,
+            'authors': item.authors.split(','),
+            'tags': item.tags.split(',').map(itemy => itemy.replace(/[\][']/g, '')),
+            'keywords': [
+              'Imitation Learning',
+              'Reinforcement Learning',
+              'Parsing'
+            ],
+            'link': item.link,
+            'abstract': item.description,
+            'published': item.published,
+            'journal': item.journal,
+            'conference': item.conference,
+            'citedPapers': item.citedPapers,
+            'updated:': item.updated,
+            'thumbnailURL': item.thumbs,
+          }
+        })[0],
+        message: 'success'
+      };
+    }
+  }
+  
+
   @get('/paperinfo', true)
   async paperInfo(ctx: Context) {
-    // const id = 1
-    const papers: Array<PaperInterface> = await PaperService.getPaper({ deleted: 0 })
-    const res: PaperInterface = papers[0]
-    const fakeData = {
-      'status_type': 'followed_people_paper',
-      'type': 'arxiv',
-      'id': res.id,
-      'user': res.userId,
-      'title': res.title,
-      'authors': res.authors.split(',').map(item => {
-        return { 'name': item }
-      }),
-      'tags': res.tags.split(',').map(item => item.replace(/[\][']/g, '')),
-      'keywords': [
-        'Imitation Learning',
-        'Reinforcement Learning',
-        'Parsing'
-      ],
-      'link': res.link,
-      'abstract': res.description,
-      'thumbnailURL': '',
-    }
-    return ctx.body = {
-      code: 0,
-      data: fakeData,
-      message: 'success'
-    };
-    // const { id } = ctx.query;
-    // const papers: Array<Object> = await PaperService.getPaper({ id: id });
+    const { id } = ctx.query;
+    const papers: Array<PaperInterface> = await PaperService.getPaper({ id: id });
 
-    // if (!papers.length) {
-    //   return ctx.body = {
-    //     code: 1,
-    //     message: '论文不存在'
-    //   };
-    // } else {
-    //   return ctx.body = {
-    //     code: 0,
-    //     data: papers[0],
-    //     message: 'success'
-    //   };
-    // }
+    if (!papers.length) {
+      return ctx.body = {
+        code: 1,
+        message: '论文不存在'
+      };
+    } else {
+      return ctx.body = {
+        code: 0,
+        data: papers.map(item => {
+          return {
+            'status_type': 'first_cold_paper',
+            'type': 'arxiv',
+            'id': item.id,
+            'user': item.userId,
+            'title': item.title,
+            'authors': item.authors.split(','),
+            'tags': item.tags.split(',').map(itemy => itemy.replace(/[\][']/g, '')),
+            'keywords': [
+              'Imitation Learning',
+              'Reinforcement Learning',
+              'Parsing'
+            ],
+            'link': item.link,
+            'abstract': item.description,
+            'published': item.published,
+            'journal': item.journal,
+            'conference': item.conference,
+            'citedPapers': item.citedPapers,
+            'updated:': item.updated,
+            'thumbnailURL': item.thumbs,
+          }
+        })[0],
+        message: 'success'
+      };
+    }
   }
 
   @post('/paperinfo')
@@ -119,5 +160,7 @@ export default class Paper {
       };
     }
   }
+
+
 
 }

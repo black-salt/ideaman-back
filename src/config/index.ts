@@ -27,10 +27,12 @@ export const app = {
  * mysql database config
  */
 export const db: PoolConfig = {
-  host: notProd ? 'localhost' : '',
+  // host: notProd ? 'localhost' : '',
+  host: notProd ? '120.53.230.198' : '',
   port: 3306,
   user: 'root',
-  password: notProd ? 'lskreno' : 'lskreno*/0',
+  // password: notProd ? 'lskreno' : 'lskreno*/0',
+  password: notProd ? ',/Qa+sk.mGB48' : 'lskreno*/0',
   database: 'ideaman',
   charset: 'utf8mb4',//utf8mb4才能保存emoji
   multipleStatements: true,// 可同时查询多条语句, 但不能参数化传值

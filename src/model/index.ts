@@ -8,11 +8,14 @@
 import User from './user';
 import UserType from './userType';
 import Paper from './paper';
+import Author from './author';
 import PaperType from './paperType';
 import LibraryPaper from './libraryPaper';
 
 import Team from './team';
 import Advice from './advice';
+import Realtime from './realtime';
+import OfflinePaper from './offlinePaper';
 
 // hasMany, belongsTo 是外键关联的相关方法
 // Article.hasMany(Category)
@@ -23,9 +26,14 @@ import Advice from './advice';
 User.sync()
 UserType.sync()
 Paper.sync()
+Author.sync()
 PaperType.sync()
 LibraryPaper.sync()
 Team.sync()
 Advice.sync()
 
-export default { User, UserType, Paper, PaperType, LibraryPaper, Team, Advice }
+Realtime.sync()
+OfflinePaper.sync()
+
+
+export default { User, UserType, Paper, Author, PaperType, LibraryPaper, Team, Advice, Realtime, OfflinePaper }
