@@ -28,7 +28,7 @@ export const app = {
  */
 export const db: PoolConfig = {
   // host: notProd ? 'localhost' : '',
-  host: notProd ? '120.53.230.198' : '',
+  host: notProd ? '152.136.160.90' : '',
   port: 3306,
   user: 'root',
   // password: notProd ? 'lskreno' : 'lskreno*/0',

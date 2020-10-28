@@ -4,6 +4,8 @@ import PaperService from '../service/paper';
 import OfflinePaperService from '../service/offline';
 import { OfflinePaperInterface } from '../service/offline';
 import { PaperInterface } from '../service/paper';
+import AuthorService from '../service/author';
+import AuthorInterface from '../service/author';
 
 export default class Paper {
 
@@ -14,6 +16,16 @@ export default class Paper {
     let len = papers.length
     const offlinePapers = papers[len - 1].recs.split(',').map(item => +item)
 
+    // 取出 offlinePapers 的论文详情
+    // const offlinePapers = papers[len - 1].recs.split(',')
+    // let relatedRecPapers: Array<PaperInterface> = await PaperService.getPaperByPaperIds(offlinePapers);
+    const relatedRecPapers: Array<PaperInterface> = []
+    for await (const paperId of offlinePapers) {
+      let res: Array<PaperInterface> = await PaperService.getPaper({id: paperId})
+      relatedRecPapers.push(res[0])
+    }
+
+
     if (!papers.length) {
       return ctx.body = {
         code: 1,
@@ -22,7 +34,7 @@ export default class Paper {
     } else {
       return ctx.body = {
         code: 0,
-        data: offlinePapers,
+        data: relatedRecPapers,
         message: 'success'
       };
     }
@@ -33,6 +45,38 @@ export default class Paper {
   async paperInfo(ctx: Context) {
     const { id } = ctx.query;
     const papers: Array<PaperInterface> = await PaperService.getPaper({ id: id });
+    const paperDetail = papers.map(item => {
+      return {
+        'status_type': 'first_cold_paper',
+        'type': 'arxiv',
+        'id': item.id,
+        'user': item.userId,
+        'title': item.title,
+        'authors': item.authors.split(','),
+        'tags': item.tags.split(',').map(itemy => itemy.replace(/[\][']/g, '')),
+        'keywords': [
+          'Imitation Learning',
+          'Reinforcement Learning',
+          'Parsing'
+        ],
+        'link': item.link,
+        'abstract': item.description,
+        'published': item.published,
+        'journal': item.journal,
+        'conference': item.conference,
+        'citedPapers': item.citedPapers,
+        'updated:': item.updated,
+        'thumbnailURL': item.thumbs,
+      }
+    })[0]
+
+    const authors:string[] = []
+    for await (const authorId of paperDetail.authors.map(itemx => +itemx)) {
+      let res:Array<AuthorInterface> = await AuthorService.getAuthor({id: authorId})
+      authors.push(res[0]['author'])
+    }
+    paperDetail.authors = authors
+
 
     if (!papers.length) {
       return ctx.body = {
@@ -42,30 +86,7 @@ export default class Paper {
     } else {
       return ctx.body = {
         code: 0,
-        data: papers.map(item => {
-          return {
-            'status_type': 'first_cold_paper',
-            'type': 'arxiv',
-            'id': item.id,
-            'user': item.userId,
-            'title': item.title,
-            'authors': item.authors.split(','),
-            'tags': item.tags.split(',').map(itemy => itemy.replace(/[\][']/g, '')),
-            'keywords': [
-              'Imitation Learning',
-              'Reinforcement Learning',
-              'Parsing'
-            ],
-            'link': item.link,
-            'abstract': item.description,
-            'published': item.published,
-            'journal': item.journal,
-            'conference': item.conference,
-            'citedPapers': item.citedPapers,
-            'updated:': item.updated,
-            'thumbnailURL': item.thumbs,
-          }
-        })[0],
+        data: paperDetail,
         message: 'success'
       };
     }

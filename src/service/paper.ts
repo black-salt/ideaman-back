@@ -81,6 +81,20 @@ class PaperService {
    * @param  
    * @return: Promise
    */
+  static getPaperByPaperIds<T>(data: Array<number>): Promise<T> {
+    return Models.Paper.findAll({
+      where: {
+        id: {
+          $in: data,
+        }
+      }
+    })
+  }
+  /**
+   * @description: 获取 PaperList, by libraryPaper
+   * @param  
+   * @return: Promise
+   */
   static getPaperByLibraryPaper<T>(data: Array<string>): Promise<T> {
     return Models.Paper.findAll({
       where: {
