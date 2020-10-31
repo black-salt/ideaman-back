@@ -7,10 +7,11 @@ import compress from 'koa-compress'
 import cors from 'koa2-cors'
 import koaBody from 'koa-body'
 import koaRouter from 'koa-router'
+import session from 'koa-session'
 import favicon from 'koa-favicon'
 import socket from 'socket.io'
 
-import { app as config } from './config'
+import { app as config, sessionConfig } from './config'
 import log from './common/logger'
 import addRouter from './router/router'
 import addSocket from './socket'
@@ -23,6 +24,9 @@ const router = new koaRouter();
 const server = http.createServer(app.callback())
 const socketServer = socket(server)
 const baseDir = path.normalize(__dirname + '/..')
+
+app.keys = ['some secret hurr']; // koa-session加密
+app.use(session(sessionConfig, app));
 
 // gzip
 app.use(compress({

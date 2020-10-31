@@ -21,6 +21,8 @@ interface UserInterface {
 // 用户 修改的接口类型
 interface UserUpdateInterface {
   id?: number,
+  salt?: string
+  hashPassword: string,  
   username: string,
   type: string,
   name?: string,
@@ -145,13 +147,13 @@ class UserService {
           const nowDate = new Date(); //当前时间
 
           const {
-            id, email, avatar,
+            id, salt, hashPassword, email, avatar,
             signature, status, isBlock
           } = data
           resolve(
             Promise.all([
               Models.User.update({
-                id, email, avatar, signature, status,
+                id, salt, hashPassword, email, avatar, signature, status,
                 isBlock, updateTime: nowDate
               }, { where: { id: id } }),
             ]).then((res: any) => {

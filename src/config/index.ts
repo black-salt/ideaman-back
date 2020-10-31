@@ -13,7 +13,7 @@ const notProd = process.env.NODE_ENV !== 'production'
 export const app = {
   isDev: isDev,
   // client: notProd ? '*' : 'http://lskreno.top:8409',//允许访问接口的客户端地址，就是允许跨域访问的客户端地址
-  client: '*',//允许访问接口的客户端地址，就是允许跨域访问的客户端地址
+  client: 'http://localhost:8080',//允许访问接口的客户端地址，就是允许跨域访问的客户端地址
   // client: 'http://localhost:9082',//允许访问接口的客户端地址，就是允许跨域访问的客户端地址
   // host: notProd ? 'localhost' : 'http://lskreno.top:8408',
   host: 'localhost',
@@ -27,12 +27,12 @@ export const app = {
  * mysql database config
  */
 export const db: PoolConfig = {
-  // host: notProd ? 'localhost' : '',
-  host: notProd ? '152.136.160.90' : '',
+  host: notProd ? 'localhost' : 'localhost',
+  //host: notProd ? '152.136.160.90' : '',
   port: 3306,
   user: 'root',
-  // password: notProd ? 'lskreno' : 'lskreno*/0',
-  password: notProd ? ',/Qa+sk.mGB48' : 'lskreno*/0',
+  password: notProd ? 'cjh2000923' : 'cjh2000923',
+  //password: notProd ? ',/Qa+sk.mGB48' : 'lskreno*/0',
   database: 'ideaman',
   charset: 'utf8mb4',//utf8mb4才能保存emoji
   multipleStatements: true,// 可同时查询多条语句, 但不能参数化传值
@@ -80,4 +80,28 @@ export const log4js = {
       level: 'info'
     }
   }
+};
+
+/**
+ * mailer config
+ */
+export const mailConfig = {
+  mailHost: 'smtp.qq.com',
+  mailFrom: '1292168798@qq.com', // 发送邮箱
+  mailPassWord: 'hglcmsmfhdbwbagd', // 授权码,非邮箱密码
+}
+
+/**
+ * koa-session config
+ */
+export const sessionConfig = {
+  key: 'koa.sess', /** (string) cookie key (default is koa.sess) */
+  maxAge: 180000, /** ms */
+  autoCommit: true, /** (boolean) automatically commit headers (default true) */
+  overwrite: true, /** (boolean) can overwrite or not (default true) */
+  httpOnly: true, /** (boolean) httpOnly or not (default true) */
+  signed: true, /** (boolean) signed or not (default true) */
+  rolling: false, /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false) */
+  renew: false, /** (boolean) renew session when session is nearly expired, so we can always keep user logged in. (default is false)*/
+  secure: false, /** (boolean) secure cookie*/
 };

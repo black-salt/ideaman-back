@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import { Context } from 'koa';
 import { post } from '../decorator/httpMethod'
 import UserService from '../service/user';
+import {mailSender} from '../common/mailSender'
 
 // 用户 接口类型
 interface UserInterface {
@@ -122,4 +123,80 @@ export default class Sign {
       }
     }
   }
+
+  @post('/sendVerificationCode')
+  async sendVerificationCode(ctx: Context) {
+    const { username } = ctx.request.body;
+
+    // 根据用户名查找用户
+    const users: Array<UserInterface> = await UserService.getUser({ username: username });
+    if (!users.length) {
+      return ctx.body = {
+        code: 2,
+        message: '用户不存在'
+      };
+    }
+
+    // 生成6位数字字符串验证码
+    let verificationCode: string = Math.random().toString().slice(-6);
+
+    //发送邮件
+    try {
+      await mailSender(users[0].email, 'Ideaman找回密码', '验证码：'+verificationCode+'，有效时间3分钟')
+      ctx.session.verificationCode = verificationCode // 将验证码存入session
+      return ctx.body = {
+        code: 0,
+        message: '已发送验证码'
+      }
+    } catch (e) {
+      console.info(e)
+      return ctx.body = {
+        code: 3,
+        message: '发送失败！'
+      }
+    }
+  }
+
+  @post('/forgetPassword')
+  async forgetPassword(ctx: Context) {
+
+    const { username, password, verificationCode } = ctx.request.body
+    // 校验验证码
+    if(ctx.session.verificationCode !== verificationCode) {
+      return ctx.body = {
+        code: 1,
+        message: '验证码错误'
+      };
+    }
+    // 先查一下这个用户在不在数据库里
+    const users: Array<UserInterface> = await UserService.getUser({ username: username })
+    console.info(users[0])
+    if (!users.length) {
+      return ctx.body = {
+        code: 2,
+        message: '用户不存在'
+      };
+    }
+    //
+    try {
+      const salt = makeSalt(); // 生成加密的盐
+      const hash_password = encryptPass(password, salt); //根据盐对密码进行加密处理
+      users[0].salt = salt // 新盐
+      users[0].hashPassword = hash_password // 赋值新密码
+      await UserService.updateUserService( users[0] )
+      return ctx.body = {
+        code: 0,
+        message: '修改成功'
+      }
+    } catch (e) {
+      console.info(e)
+      return ctx.body = {
+        code: 3,
+        message: '注册失败！'
+      }
+    }
+  }
 }
+
+
+
