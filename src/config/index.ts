@@ -27,8 +27,8 @@ export const app = {
  * mysql database config
  */
 export const db: PoolConfig = {
-  host: notProd ? 'localhost' : 'localhost',
-  //host: notProd ? '152.136.160.90' : '',
+  // host: notProd ? 'localhost' : '',
+  host: notProd ? '120.53.107.182' : '',
   port: 3306,
   user: 'root',
   password: notProd ? 'cjh2000923' : 'cjh2000923',

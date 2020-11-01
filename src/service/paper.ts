@@ -1,4 +1,5 @@
 import Models from '../model/index'
+// import { Op } from "sequelize";
 
 // 论文 新增的接口类型
 interface PaperInterface {
@@ -64,14 +65,18 @@ class PaperService {
   static getPaper<T>(data: PaperInfoInterface): Promise<T> {
     if (data.id) {
       return Models.Paper.findAll({
-        where: { id: data.id, 
-          // deleted: 0 
+        where: { 
+          id: data.id, 
         }
       })
     } else {
       return Models.Paper.findAll({
         limit: 10,
-        // where: { deleted: 0 }
+        // where: { 
+        //   id: {
+        //     [Op.lte]: 3000,  // 由于实时端要求，所以目前只能查找id小于3000的论文
+        //   } 
+        // }
       })
     }
   }

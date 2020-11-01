@@ -25,7 +25,6 @@ export default class Paper {
       relatedRecPapers.push(res[0])
     }
 
-
     if (!papers.length) {
       return ctx.body = {
         code: 1,
