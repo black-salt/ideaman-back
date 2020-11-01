@@ -3,7 +3,7 @@ import crypto from 'crypto'
 import { Context } from 'koa';
 import { post } from '../decorator/httpMethod'
 import UserService from '../service/user';
-import {mailSender} from '../common/mailSender'
+import { mailSender } from '../common/mailSender'
 
 // 用户 接口类型
 interface UserInterface {
@@ -32,6 +32,7 @@ export default class Sign {
   @post('/login')
   async login(ctx: Context) {
     const { username, password } = ctx.request.body;
+    console.info(username, password)
     // 先查一下这个用户在不在数据库里
     const users: Array<UserInterface> = await UserService.getUser({ username: username });
     console.info(users[0])
@@ -96,7 +97,7 @@ export default class Sign {
       email: <string>email,
       type: '2', //userType表里的 id
       signature: '我是Idea Man新成员啦',
-      addTime: nowDate, 
+      addTime: nowDate,
       updateTime: nowDate
     };
 
@@ -142,7 +143,7 @@ export default class Sign {
 
     //发送邮件
     try {
-      await mailSender(users[0].email, 'Ideaman找回密码', '验证码：'+verificationCode+'，有效时间3分钟')
+      await mailSender(users[0].email, 'Ideaman找回密码', '验证码：' + verificationCode + '，有效时间3分钟')
       ctx.session.verificationCode = verificationCode // 将验证码存入session
       return ctx.body = {
         code: 0,
@@ -162,7 +163,7 @@ export default class Sign {
 
     const { username, password, verificationCode } = ctx.request.body
     // 校验验证码
-    if(ctx.session.verificationCode !== verificationCode) {
+    if (ctx.session.verificationCode !== verificationCode) {
       return ctx.body = {
         code: 1,
         message: '验证码错误'
@@ -183,7 +184,7 @@ export default class Sign {
       const hash_password = encryptPass(password, salt); //根据盐对密码进行加密处理
       users[0].salt = salt // 新盐
       users[0].hashPassword = hash_password // 赋值新密码
-      await UserService.updateUserService( users[0] )
+      await UserService.updateUserService(users[0])
       return ctx.body = {
         code: 0,
         message: '修改成功'

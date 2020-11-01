@@ -4,8 +4,11 @@ import { app } from '../config'
 import { cpus } from 'os'
 import UserService from '../service/user';
 import PaperService from '../service/paper';
+import RealTimePaperService from '../service/realtime';
 import AuthorService from '../service/author';
 import { PaperInterface } from '../service/paper';
+import { RealtimePaperInterface } from '../service/realtime';
+import { getThumbnailURL } from '../common/util';
 
 export default class User {
 
@@ -131,10 +134,30 @@ export default class User {
 
   @get('/firstPaint', true)
   async firstPaint(ctx: Context) {
-    // const id = 1
-    const papers: Array<PaperInterface> = await PaperService.getPaper({ deleted: 0 })
+    const { userId } = ctx.query;
+    const realTimeRecs: Array<RealtimePaperInterface> = await RealTimePaperService.getRealTimePaper({ userId })
+    const paperIds: Array<string> = []
+    realTimeRecs.forEach(el => {
+      const { recs } = el
+      const papers = recs.split('/')
+      papers.forEach(p => {
+        const id = p.split(':')[0]
+        if (id) {
+          paperIds.push(id)
+        }
+      })
+    });
+
+    const realTimePapers: Array<PaperInterface> = []
+    for await (const paperId of paperIds) {
+      let res: Array<PaperInterface> = await PaperService.getPaper({id: +paperId})
+      realTimePapers.push(res[0])
+    }
+    const regularPapers: Array<PaperInterface> = await PaperService.getPaper({ deleted: 0 })
+    const papers: Array<PaperInterface> = [...realTimePapers, ...regularPapers]
 
     const resPapers = papers.map(item => {
+      const thumbnailURLList = getThumbnailURL(item)
       return {
         'status_type': 'first_cold_paper',
         'type': 'arxiv',
@@ -155,7 +178,7 @@ export default class User {
         'conference': item.conference,
         'citedPapers': item.citedPapers,
         'updated:': item.updated,
-        'thumbnailURL': item.thumbs,
+        'thumbnailURL': thumbnailURLList,
       }
     })
 

@@ -6,6 +6,7 @@ import { OfflinePaperInterface } from '../service/offline';
 import { PaperInterface } from '../service/paper';
 import AuthorService from '../service/author';
 import AuthorInterface from '../service/author';
+import { getThumbnailURL } from '../common/util';
 
 export default class Paper {
 
@@ -45,6 +46,8 @@ export default class Paper {
     const { id } = ctx.query;
     const papers: Array<PaperInterface> = await PaperService.getPaper({ id: id });
     const paperDetail = papers.map(item => {
+      const thumbnailURLList = getThumbnailURL(item)
+
       return {
         'status_type': 'first_cold_paper',
         'type': 'arxiv',
@@ -65,7 +68,7 @@ export default class Paper {
         'conference': item.conference,
         'citedPapers': item.citedPapers,
         'updated:': item.updated,
-        'thumbnailURL': item.thumbs,
+        'thumbnailURL': thumbnailURLList,
       }
     })[0]
 

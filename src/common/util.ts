@@ -257,6 +257,17 @@ function getTimeByTimeZone(timeZone: number): Date {
   return date;
 }
 
+function getThumbnailURL(item: { userId: string }) {
+  // 处理 thumbnailURL
+  const thumbnailURL_Id = item.userId.split(':')[1]
+  const thumbnailURLList = []
+  for (let i = 0; i < 6; i++) {
+    const url = `https://ideaman-1257076233.file.myqcloud.com/thumbs/${thumbnailURL_Id}/preview_${i}.webp`
+    thumbnailURLList.push(url)
+  }
+  return thumbnailURLList
+}
+
 
 export {
   deepCopy,
@@ -272,5 +283,6 @@ export {
   compressPictureToBlob,
   dataURLtoBlob,
   shareUrl,
-  getTimeByTimeZone
+  getTimeByTimeZone,
+  getThumbnailURL
 };

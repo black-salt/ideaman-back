@@ -14,7 +14,7 @@ export const app = {
   isDev: isDev,
   // client: notProd ? '*' : 'http://lskreno.top:8409',//允许访问接口的客户端地址，就是允许跨域访问的客户端地址
   client: 'http://localhost:8080',//允许访问接口的客户端地址，就是允许跨域访问的客户端地址
-  // client: 'http://localhost:9082',//允许访问接口的客户端地址，就是允许跨域访问的客户端地址
+  // client: 'http://localhost:8082',//允许访问接口的客户端地址，就是允许跨域访问的客户端地址
   // host: notProd ? 'localhost' : 'http://lskreno.top:8408',
   host: 'localhost',
   port: 3000, // koa app 服务器开放的端口
@@ -31,8 +31,8 @@ export const db: PoolConfig = {
   host: notProd ? '120.53.107.182' : '',
   port: 3306,
   user: 'root',
-  password: notProd ? 'cjh2000923' : 'cjh2000923',
-  //password: notProd ? ',/Qa+sk.mGB48' : 'lskreno*/0',
+  // password: notProd ? 'cjh2000923' : 'cjh2000923',
+  password: notProd ? ',/Qa+sk.mGB48' : 'lskreno*/0',
   database: 'ideaman',
   charset: 'utf8mb4',//utf8mb4才能保存emoji
   multipleStatements: true,// 可同时查询多条语句, 但不能参数化传值
