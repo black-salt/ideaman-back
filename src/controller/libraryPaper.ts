@@ -9,14 +9,14 @@ export default class LibraryPaper {
   @get('/library', true)
   async libraryPaperInfo(ctx: Context) {
     const uid = ctx.state.token.uid;
-    const libraryPapers: Array<LibraryPaperInterface> =
-      await LibraryPaperService.getLibraryPaperByUser({ uid: uid });
-
-    const LibraryPaperIds: Array<string> = libraryPapers.map(item => item.paperId)
-
-    const res: Array<PaperInterface> =
-      await PaperService.getPaperByLibraryPaper(LibraryPaperIds);
-
+    const libraryPapers: Array<LibraryPaperInterface> = await LibraryPaperService.getLibraryPaperByUser({ uid: uid });
+    const LibraryPaperIds: Array<number> = libraryPapers.map(item => Number(item.paperId))
+    let res: Array<PaperInterface> = []
+    for(let paperId of LibraryPaperIds){
+      const paper: Array<PaperInterface> = await PaperService.getPaperByLibraryPaper(paperId);
+      if(paper.length)
+        res.push(paper[0])
+    }
     if (!res.length) {
       return ctx.body = {
         code: 1,
@@ -78,10 +78,10 @@ export default class LibraryPaper {
 
   @del('/libraryPaper', true)
   async delLibraryPaper(ctx: Context) {
-    const { id, deleted } = ctx.request.body;
+    const { userId, paperId } = ctx.request.body;
     // 做log的时候用 libraryPaperId:token.uid
     try {
-      await LibraryPaperService.deleteLibraryPaperService({ id, deleted });
+      await LibraryPaperService.deleteLibraryPaperService({ paperId: paperId, userId: userId });
       return ctx.body = {
         code: 0,
         message: '删除文库论文成功'

@@ -100,13 +100,11 @@ class PaperService {
    * @param  
    * @return: Promise
    */
-  static getPaperByLibraryPaper<T>(data: Array<string>): Promise<T> {
+  static getPaperByLibraryPaper<T>(paperId: number): Promise<T> {
     return Models.Paper.findAll({
       where: {
-        id: {
-          $in: data,
-          // deleted: 0
-        }
+        id: paperId,
+        deleted: 0
       }
     })
   }

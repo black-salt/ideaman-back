@@ -147,16 +147,14 @@ class LibraryPaperService {
    * @param LibraryPaperIdInterface
    * @return: Promise
    */
-  static deleteLibraryPaperService<T>(data: { id: string, deleted: string }): Promise<T> {
+  static deleteLibraryPaperService<T>(data: { paperId: string, userId: string }): Promise<T> {
     return new Promise((resolve: Function, reject: Function) => {
-      if (!data.id) {
+      if (!data.paperId) {
         reject('参数错误')
       } else {
         const nowDate = new Date(); //当前时间
-
-        let deletedTag = parseInt(data.deleted) ? 0 : 1;
         Promise.all([
-          Models.LibraryPaper.update({ updateTime: nowDate, deleted: deletedTag }, { where: { id: data.id } }),
+          Models.LibraryPaper.update({ updateTime: nowDate, deleted: 1 }, { where: { paperId: data.paperId, userId: data.userId, deleted: 0 } }),
         ]).then((res) => {
           resolve(res)
         }).catch((err) => {
