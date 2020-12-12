@@ -17,6 +17,10 @@ import Advice from './advice';
 import Realtime from './realtime';
 import OfflinePaper from './offlinePaper';
 
+import Tag from './tag'
+import TagType from './tagType'
+import Trend from './trend'
+
 // hasMany, belongsTo 是外键关联的相关方法
 // Article.hasMany(Category)
 // Article.hasMany(Tag)
@@ -35,5 +39,9 @@ Advice.sync()
 Realtime.sync()
 OfflinePaper.sync()
 
+Tag.sync()
+TagType.sync()
+Trend.sync()
 
-export default { User, UserType, Paper, Author, PaperType, LibraryPaper, Team, Advice, Realtime, OfflinePaper }
+
+export default { User, UserType, Paper, Author, PaperType, LibraryPaper, Team, Advice, Realtime, OfflinePaper, Tag, TagType, Trend }
