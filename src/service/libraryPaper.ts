@@ -109,28 +109,27 @@ class LibraryPaperService {
   }
 
   /**
-   * @description: 修改用户类型,返回一个Promise
+   * @description: 更新library中记录，就是把已删除变成未删除，业务里不会有其他修改
    * @param LibraryPaperInterface
    * @return: Promise
    */
   static updateLibraryPaperService<T>(data: LibraryPaperUpdateInterface): Promise<T> {
     return new Promise((resolve: Function, reject: Function) => {
-      if (!data.id) {
+      if (!data.paperId || !data.userId) {
         reject('缺少参数错误')
       } else {
+        //没懂，暂时放着，也不会有问题
         if (Object.keys(data).length === 0) {
           reject('未做出修改')
         }
         else {
-          const {
-            id,
-            userId, paperId
-          } = data
+          const {userId, paperId} = data
           resolve(
+            //为什么要all，暂时放着，反正也对
             Promise.all([
               Models.LibraryPaper.update({
-                userId, paperId
-              }, { where: { id: id } }),
+                deleted:0
+              }, { where: { userId:userId, paperId:paperId } }),
             ]).then((res: any) => {
               resolve(res)
             }).catch((err: Error) => {
